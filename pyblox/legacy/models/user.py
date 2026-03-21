@@ -1,38 +1,18 @@
 from datetime import datetime
 
 class User:
-    def __init__(self, id: int, username: str, display_name: str, description: str, created: str, is_banned: bool, external_app_display_name: str | None = None, has_verified_badge: bool = False):
+    def __init__(self, data: dict):
+        self.id: int = data.get("id")
+        self.name: str = data.get("name")
+        self.display_name: str = data.get("displayName")
+        self.description: str = data.get("description")
 
-        self.id: int = id
-        self.name: str = username
-        self.display_name: str = display_name
-        self.description: str = description
-    
-        self.created: str = created
-        self.is_banned: bool = is_banned
-        self.external_app_display_name: str | None = external_app_display_name
-        self.verified: bool = has_verified_badge
+        created = data.get("created")
+        self.created = datetime.fromisoformat(created.replace("Z", "+00:00")) if created else None
 
-    def id(self) -> int:
-        return self.id
+        self.is_banned: bool = data.get("isBanned")
+        self.verified: bool = data.get("hasVerifiedBadge")
+        self.external_app_display_name: str | None = data.get("externalAppDisplayName")
 
-    def name(self) -> str:
-        return self.name
-
-    def display_name(self) -> str:
-        return self.display_name
-
-    def description(self) -> str:
-        return self.description
-
-    def created(self) -> datetime:
-        return datetime.utcfromtimestamp(self.created)
-
-    def is_banned(self) -> bool:
-        return self.is_banned
-
-    def external_app_display_name(self) -> str | None:
-        return self.external_app_display_name
-
-    def verified(self) -> bool:
-        return self.verified
+    def __repr__(self):
+        return f"<User id={self.id} name={self.name} display_name={self.display_name} created={self.created} is_banned={self.is_banned} external_app_display_name={self.external_app_display_name} verified={self.verified} description={self.description}>"

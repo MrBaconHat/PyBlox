@@ -7,7 +7,8 @@ async def make_request(
     endpoint,
     method="GET",
     headers=None,
-    params=None
+    params=None,
+    json=None
 ):
     url = f"https://{prefix}{BASE_URL}{endpoint}"
 
@@ -16,7 +17,8 @@ async def make_request(
             method,
             url,
             headers=headers,
-            params=params
+            params=params,
+            json=json
         ) as response:
             if response.status != 200:
                 text = await response.text()
