@@ -22,7 +22,7 @@ class Client:
                 "excludeBannedUsers": excludeBannedUsers
             }
         )
-        return [await self.get_user(user) for user in data["data"]]
+        return [await self.get_user(user["id"]) for user in data["data"]]
 
     async def get_users_by_usernames(self, usernames: list[str], excludeBannedUsers=True) -> list[User]:
         data = await make_request(
@@ -35,7 +35,7 @@ class Client:
             method="POST"
         )
         print("data:", data)
-        return [await self.get_user(user) for user in data["data"]]
+        return [await self.get_user(user["id"]) for user in data["data"]]
 
     async def get_authenticated_user(self) -> AuthenticatedUser:
         if not self.__cookie:
