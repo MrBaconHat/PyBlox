@@ -13,7 +13,10 @@ class UsernameHistory:
         self.previous_cursor = previousCursor
         self.usernames = data
 
-    async def next(self) -> "UsernameHistory":
+    async def next_page(self) -> "UsernameHistory":
+        if not self.next_cursor:
+            return None
+            
         return await self.__client.get_username_history(
             user_id=self.__user_id,
             cursor=self.next_cursor,
@@ -21,7 +24,10 @@ class UsernameHistory:
             sort_order=self.__sort_order
         )
 
-    async def previous(self) -> "UsernameHistory":
+    async def previous_page(self) -> "UsernameHistory":
+        if not self.previous_cursor:
+            return None
+            
         return await  self.__client.get_username_history(
             user_id=self.__user_id,
             cursor=self.previous_cursor,

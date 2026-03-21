@@ -16,17 +16,46 @@ class User:
         self.id: int = data.get("id")
         self.name: str = data.get("name")
         self.display_name: str = data.get("displayName")
-        self.description: str = data.get("description")
+        
+        self.description: str | None = data.get("description")
 
-        created = data.get("created")
-        self.created = datetime.fromisoformat(created.replace("Z", "+00:00")) if created else None
+        created: str | datetime | None = data.get("created")
+        if created and not isinstance(created, datetime):
+            self.created: datetime | None = datetime.fromisoformat(created.replace("Z", "+00:00"))
+        elif created and isinstance(created, datetime):
+            self.created = created
+        else:
+            self.created = None
 
-        self.is_banned: bool = data.get("isBanned")
-        self.verified: bool = data.get("hasVerifiedBadge")
+        self.is_banned: bool | None = data.get("isBanned")
+        self.verified: bool | None = data.get("hasVerifiedBadge")
         self.external_app_display_name: str | None = data.get("externalAppDisplayName")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "displayName": self.display_name,
+            "description": self.description,
+            "created": self.created,
+            "isBanned": self.is_banned,
+            "hasVerifiedBadge": self.verified,
+            "externalAppDisplayName": self.external_app_display_name
+        }
 
     def __repr__(self):
         return f"<User id={self.id} name={self.name} display_name={self.display_name} created={self.created} is_banned={self.is_banned} external_app_display_name={self.external_app_display_name} verified={self.verified} description={self.description}>"
+
+    async def refresh(self):
+        """
+        Refreshes the user data. Only use this if you need the full user data.
+        """
+        data = await make_request(
+            "users",
+            f"/v1/users/{self.id}",
+            headers=self.__client.__headers
+        )
+        self.__init__(self.__client, data)
 
     async def username_history(
         self, limit: int = 10, 

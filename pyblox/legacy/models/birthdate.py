@@ -1,8 +1,12 @@
 from ..utils.requests import make_request
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..client import Client
 
 class UserBirthdate:
-    def __init__(self, cookie: str, data: dict):
-        self.__cookie = cookie
+    def __init__(self, client: "Client", data: dict):
+        self.__client = client
 
         self.birthMonth: int = data.get("birthMonth")
         self.birthDay: int = data.get("birthDay")
@@ -20,9 +24,7 @@ class UserBirthdate:
             "users",
             "/v1/birthdate",
             method="POST",
-            headers={
-                "Cookie": f".ROBLOSECURITY={self.__cookie}"
-            },
+            headers=self.__client.headers,
             json={
                 "birthMonth": birthMonth,
                 "birthDay": birthDay,
@@ -31,4 +33,4 @@ class UserBirthdate:
             }
         )
 
-        return UserBirthdate(self.__cookie, data)
+        return UserBirthdate(self.__client, data)

@@ -5,6 +5,7 @@ from .utils.requests import make_request
 from .models import User
 from .models import AuthenticatedUser
 from .models import UsernameHistory
+from .models import UserSearch
 
 from .types import SortOrder
 
@@ -14,6 +15,10 @@ class Client:
         self.__headers = None
         if cookie:
             self.__headers = {"cookie": f".ROBLOSECURITY={cookie}"}
+
+    @property
+    def headers(self):
+        return self.__headers
 
     async def _get_full_users(self, user_ids: list[int]) -> list["User"]:
         return await asyncio.gather(
@@ -66,9 +71,9 @@ class Client:
             "/v1/authenticated-user",
             headers=self.__headers
         )
-        return  AuthenticatedUser(self.__cookie, User(client=self, data=data))
+        return AuthenticatedUser(self, data)
 
-    async def get_username_history(self, user_id: int, limit: int = 10, cursor: str | None = None, sort_order: SortOrder = SortOrder.Desc) -> "UsernameHistory":
+    async def get_username_history(self, user_id: int, limit: int = 10, cursor: str | None = None, sort_order: SortOrder = SortOrder.Asc) -> "UsernameHistory":
         params = {
             "limit": limit,
             "sortOrder": sort_order.value
@@ -90,4 +95,39 @@ class Client:
             nextCursor=data.get("nextPageCursor"),
             previousCursor=data.get("previousPageCursor"),
             data=data.get("data", [])
+        )
+
+    async def search_users(
+        self,
+        keyword: str,
+        session_id: str | None = None,
+        limit: int = 10,
+        cursor: str | None = None
+    ) -> UserSearch:
+        data = await make_request(
+            "users",
+            "/v1/users/search",
+            params={
+                "keyword": keyword,
+                "limit": 10
+            },
+            headers=self.headers
+        )
+        users_list = []
+        for user in data["data"]:
+            u = User(self, user)
+            u.previous_usernames =  user.get("previousUsernames", [])
+            users_list.append(u)
+
+        return UserSearch(
+            client=self,
+            input_data={
+                "keyword": keyword,
+                "session_id": session_id,
+                "limit": limit,
+                "cursor": cursor
+            },
+            users=users_list,
+            next_cursor=data.get("nextPageCursor"),
+            previous_cursor=data.get("previousPageCursor")
         )
