@@ -1,18 +1,21 @@
 import asyncio
+import random
+
 from pyblox.legacy import Client
+from pyblox.legacy import types
 
 client = Client()
 
 async def main():
-    user = await client.get_users_by_usernames(["Mr_Hat360"])
-    user = user[0]
+    user = await client.get_user(953381216)
 
-    print(user.name)
-    print(user.id)
-    print(user.display_name)
-    print(user.description)
-    print(user.created)
-    print(user.is_banned)
-    print(user.external_app_display_name)
+    username_history = await user.username_history(
+        limit=100,
+        sort_order=types.SortOrder.Asc
+    )
+    print(username_history.usernames)
+    await asyncio.sleep(5)
+    username_history2 = await username_history.next()
+    print(username_history2.usernames)
 
 asyncio.run(main())

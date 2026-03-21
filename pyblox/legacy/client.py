@@ -1,52 +1,93 @@
+import asyncio
+from typing import TYPE_CHECKING
 from .utils.requests import make_request
-from .models.user import User
-from .models.authenticateduser import AuthenticatedUser
+
+from .models import User
+from .models import AuthenticatedUser
+from .models import UsernameHistory
+
+from .types import SortOrder
 
 class Client:
     def __init__(self, cookie: str | None = None):
         self.__cookie = cookie
+        self.__headers = None
+        if cookie:
+            self.__headers = {"cookie": f".ROBLOSECURITY={cookie}"}
 
-    async def get_user(self, user_id: int) -> User:
+    async def _get_full_users(self, user_ids: list[int]) -> list["User"]:
+        return await asyncio.gather(
+            *[self.get_user(uid) for uid in user_ids]
+        )
+
+    async def get_user(self, user_id: int) -> "User":
         data = await make_request(
             "users",
-            f"/v1/users/{user_id}"
+            f"/v1/users/{user_id}",
+            headers=self.__headers
         )
-        return User(data=data)
+        return User(
+            client=self,
+            data=data
+        )
 
-    async def get_users(self, user_ids: list[int], excludeBannedUsers: bool = True) -> list[User] | list:
+    async def get_users(self, user_ids: list[int], excludeBannedUsers: bool = True) -> list["User"]:
         data = await make_request(
             "users",
             "/v1/users",
-            params={
-                "userIds": ",".join(map(str, user_ids)),
+            json={
+                "userIds": user_ids,
                 "excludeBannedUsers": excludeBannedUsers
-            }
+            },
+            method="POST",
+            headers=self.__headers
         )
-        return [await self.get_user(user["id"]) for user in data["data"]]
+        return await self._get_full_users([user["id"] for user in data["data"]])
 
-    async def get_users_by_usernames(self, usernames: list[str], excludeBannedUsers=True) -> list[User]:
+    async def get_users_by_usernames(self, usernames: list[str], excludeBannedUsers=True) -> list["User"]:
         data = await make_request(
             "users",
             "/v1/usernames/users",
             json={
                 "usernames": usernames,
-                "excludeBannedUsers": excludeBannedUsers
+                "excludeBannedUsers": str(excludeBannedUsers).lower()
             },
-            method="POST"
+            method="POST",
+            headers=self.__headers
         )
-        print("data:", data)
-        return [await self.get_user(user["id"]) for user in data["data"]]
+        return await self._get_full_users([user["id"] for user in data["data"]])
 
-    async def get_authenticated_user(self) -> AuthenticatedUser:
+    async def get_authenticated_user(self) -> "AuthenticatedUser":
         if not self.__cookie:
             raise Exception("No cookie provided")
 
         data = await make_request(
             "users",
             "/v1/authenticated-user",
-            headers={
-                "Cookie": f".ROBLOSECURITY={self.__cookie}"
-            }
+            headers=self.__headers
         )
-        return  AuthenticatedUser(self.__cookie, User(data=data))
-        
+        return  AuthenticatedUser(self.__cookie, User(client=self, data=data))
+
+    async def get_username_history(self, user_id: int, limit: int = 10, cursor: str | None = None, sort_order: SortOrder = SortOrder.Desc) -> "UsernameHistory":
+        params = {
+            "limit": limit,
+            "sortOrder": sort_order.value
+        }
+        if cursor:
+            params["cursor"] = cursor
+            
+        data = await make_request(
+            "users",
+            f"/v1/users/{user_id}/username-history",
+            params=params,
+            headers=self.__headers
+        )
+        return UsernameHistory(
+            client=self,
+            user_id=user_id,
+            limit=limit,
+            sort_order=sort_order,
+            nextCursor=data.get("nextPageCursor"),
+            previousCursor=data.get("previousPageCursor"),
+            data=data.get("data", [])
+        )
