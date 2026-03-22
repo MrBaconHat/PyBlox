@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING
 
 from .utils.requests import make_request
 
-from .models import ThumbnailResponse, ThumbnailFormat, ThumbnailSize
+from .models.thumbnail import ThumbnailResponse, ThumbnailFormat, ThumbnailSize
 from .types import ReturnPolicy
 
 if TYPE_CHECKING:
     from .client import Client
 
-class Thumbnail:
+class Thumbnails:
     def __init__(self, client: Client):
         self.__client = client
 

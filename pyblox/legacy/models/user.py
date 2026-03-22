@@ -9,7 +9,7 @@ from ..utils.requests import make_request
 from .. import types
 from .. import models
 
-from ..thumbnails import Thumbnail
+from ..thumbnails import Thumbnails
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class User:
     def __init__(self, client: "Client", data: dict):
         self.__client = client
-        self.thumbnails = Thumbnail(self.__client)
+        self.thumbnails = Thumbnails(self.__client)
         
         self.id: int = data.get("id")
         self.name: str = data.get("name")
