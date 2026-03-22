@@ -19,7 +19,7 @@ class AuthenticatedUser(User):
         data = await make_request(
             "users",
             "/v1/birthdate",
-            headers=self.__client.__headers
+            headers=self.__client.headers
         )
         return UserBirthdate(self.__client, data)
 
@@ -48,7 +48,7 @@ class AuthenticatedUser(User):
         data = await make_request(
             "users",
             "/v1/gender",
-            headers=self.__client.__headers
+            headers=self.__client.headers
         )
         return data.get("gender")
 

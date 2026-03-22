@@ -16,7 +16,7 @@ class UserSearch:
 
         self.users: list[User] = users
 
-    async def next_page(self) -> "UserSearch" | None:
+    async def next_page(self) -> UserSearch | None:
         if not self.next_cursor:
             return None
             
@@ -27,7 +27,7 @@ class UserSearch:
             cursor=self.next_cursor
         )
 
-    async def previous_page(self) -> "UserSearch" | None:
+    async def previous_page(self) -> UserSearch | None:
         if not self.previous_cursor:
             return None
 

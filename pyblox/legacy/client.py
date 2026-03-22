@@ -104,13 +104,19 @@ class Client:
         limit: int = 10,
         cursor: str | None = None
     ) -> UserSearch:
+        params = {
+            "keyword": keyword,
+            "limit": limit
+        }
+        if session_id:
+            params["sessionId"] = session_id
+        if cursor:
+            params["cursor"] = cursor
+            
         data = await make_request(
             "users",
             "/v1/users/search",
-            params={
-                "keyword": keyword,
-                "limit": 10
-            },
+            params=params,
             headers=self.headers
         )
         users_list = []
