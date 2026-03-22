@@ -12,6 +12,12 @@ async def make_request(
 ):
     url = f"https://{prefix}{BASE_URL}{endpoint}"
 
+    headers = headers or {}
+    
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+    headers["User-Agent"] = "PyBlox/0.1"
+
     async with aiohttp.ClientSession() as session:
         async with session.request(
             method,

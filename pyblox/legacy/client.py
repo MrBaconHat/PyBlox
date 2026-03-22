@@ -60,7 +60,7 @@ class Client:
             method="POST",
             headers=self.__headers
         )
-        return await self._get_full_users([user["id"] for user in data["data"]])
+        return [User(self, user) for user in data["data"]]
 
     async def get_authenticated_user(self) -> "AuthenticatedUser":
         if not self.__cookie:
