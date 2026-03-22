@@ -9,7 +9,7 @@ from ..utils.requests import make_request
 from .. import types
 from .. import models
 
-from ..thumbnails import Thumbnails
+from ..thumbnails import Thumbnail
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class User:
     def __init__(self, client: "Client", data: dict):
         self.__client = client
-        self.thumbnails = Thumbnails(self.__client)
+        self.thumbnails = Thumbnail(self.__client)
         
         self.id: int = data.get("id")
         self.name: str = data.get("name")
@@ -67,7 +67,7 @@ class User:
         self, limit: int = 10, 
         cursor: str | None = None,
         sort_order: types.SortOrder = types.SortOrder.Asc
-    ) -> "UsernameHistory":
+    ) -> UsernameHistory:
         return await self.__client.get_username_history(
             self.id,
             limit,
@@ -75,6 +75,17 @@ class User:
             sort_order
         )
 
-    async def avatar_thumbnail(self) -> models.Thumbnail:
-        thumbnail_data: list[models.Thumbnail] = await self.thumbnails.users_avatar([self.id])
+    async def avatar_thumbnail(self) -> models.ThumbnailResponse:
+        thumbnail_data: list[models.ThumbnailResponse] = await self.thumbnails.users_avatar([self.id])
+        return thumbnail_data[0]
+
+    async def avatar_thumbnail_3d(self) -> models.ThumbnailResponse:
+        return await self.thumbnails.user_avatar_3d(self.id)
+
+    async def  avatar_bust_thumbnail(self) -> models.ThumbnailResponse:
+        thumbnail_data: list[models.ThumbnailResponse] = await self.thumbnails.avatar_bust([self.id])
+        return thumbnail_data[0]
+
+    async def  avatar_headshot_thumbnail(self) -> models.ThumbnailResponse:
+        thumbnail_data: list[models.ThumbnailResponse] = await self.thumbnails.avatar_headshot([self.id])
         return thumbnail_data[0]

@@ -1,6 +1,6 @@
 from enum import Enum
 
-class Thumbnail:
+class ThumbnailResponse:
     def __init__(self, data: dict):
         self.target_id = data.get("targetId")
         self.state = data.get("state")

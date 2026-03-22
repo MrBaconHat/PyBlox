@@ -3,30 +3,30 @@ from typing import TYPE_CHECKING
 
 from .utils.requests import make_request
 
-from .models import Thumbnail, ThumbnailFormat, ThumbnailSize
+from .models import ThumbnailResponse, ThumbnailFormat, ThumbnailSize
 from .types import ReturnPolicy
 
 if TYPE_CHECKING:
     from .client import Client
 
-class Thumbnails:
+class Thumbnail:
     def __init__(self, client: Client):
         self.__client = client
 
-    async def asset_thumbnail_animated(self, asset_id: int, roblox_place_id: int | None = None) -> Thumbnail:
+    async def asset_thumbnail_animated(self, asset_id: int, roblox_place_id: int | None = None) -> ThumbnailResponse:
         data = await make_request(
             "thumbnails",
             "/v1/asset-thumbnail-animated",
             headers=self.__client.headers
         )
-        return Thumbnail(data["data"])
+        return ThumbnailResponse(data["data"])
 
     async def assets(
         self, 
         asset_ids: list[int], 
         size: ThumbnailSize = ThumbnailSize.SIZE_30X30, 
         format: ThumbnailFormat = ThumbnailFormat.PNG,
-        is_circular: bool = False) -> list[Thumbnail]:
+        is_circular: bool = False) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/assets",
@@ -38,14 +38,14 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def assets_thumbnail_3d(
         self,
         asset_id: int,
         use_gltf: bool = False,
         roblox_place_id: int | None = None
-    ) -> Thumbnail:
+    ) -> ThumbnailResponse:
         data = await make_request(
             "thumbnails",
             "/v1/assets-thumbnail-3d",
@@ -56,7 +56,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return Thumbnail(data["data"])
+        return ThumbnailResponse(data["data"])
 
     async def bundles_thumbnails(
         self,
@@ -64,7 +64,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_150X150,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/bundles/thumbnails",
@@ -76,7 +76,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def users_avatar(
         self,
@@ -84,7 +84,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_30X30,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/users/avatar",
@@ -96,12 +96,12 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def user_avatar_3d(
         self,
         user_ids: int
-    ) -> Thumbnail:
+    ) -> ThumbnailResponse:
         data = await make_request(
             "thumbnails",
             "/v1/users/avatar-3d",
@@ -110,7 +110,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return Thumbnail(data["data"])
+        return ThumbnailResponse(data["data"])
 
     async def avatar_bust(
         self,
@@ -118,7 +118,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_48X48,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ):
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/avatar-bust",
@@ -130,7 +130,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
         
     async def avatar_headshot(
         self,
@@ -138,7 +138,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_48X48,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/avatar-headshot",
@@ -150,7 +150,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def badges_icons(
         self,
@@ -158,7 +158,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_150X150,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/badges/icons",
@@ -170,7 +170,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def developer_product_icons(
         self,
@@ -178,7 +178,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_150X150,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/developer-products/icons",
@@ -190,7 +190,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def gamepass_icons(
         self,
@@ -198,7 +198,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_150X150,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/gamepasses/icons",
@@ -210,7 +210,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def group_icons(
         self,
@@ -218,7 +218,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_150X150,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/groups/icons",
@@ -230,7 +230,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def batch_icons(
         self
@@ -240,7 +240,7 @@ class Thumbnails:
     async def users_outfit_3d(
         self,
         outfitId: int
-    ):
+    ) -> ThumbnailResponse:
         data = await make_request(
             "thumbnails",
             "/v1/outfits/3d",
@@ -249,7 +249,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return Thumbnail(data["data"])
+        return ThumbnailResponse(data["data"])
 
     async def users_outfits(
         self,
@@ -257,7 +257,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_150X150,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/users/outfits",
@@ -269,7 +269,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def games_thumbnails(
         self,
@@ -278,7 +278,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_768X432,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/games/thumbnails",
@@ -291,7 +291,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def games_icons(
         self,
@@ -300,7 +300,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_50X50,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ):
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/games/icons",
@@ -313,7 +313,7 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
 
     async def games_multiget_thumbnails(
         self,
@@ -323,7 +323,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_768X432,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = False
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         ...
 
     async def places_gameicons(
@@ -333,7 +333,7 @@ class Thumbnails:
         size: ThumbnailSize = ThumbnailSize.SIZE_50X50,
         format: ThumbnailFormat = ThumbnailFormat.PNG,
         is_circular: bool = True
-    ) -> list[Thumbnail]:
+    ) -> list[ThumbnailResponse]:
         data = await make_request(
             "thumbnails",
             "/v1/places/gameicons",
@@ -346,4 +346,4 @@ class Thumbnails:
             },
             headers=self.__client.headers
         )
-        return [Thumbnail(thumbnail) for thumbnail in data["data"]]
+        return [ThumbnailResponse(thumbnail) for thumbnail in data["data"]]
