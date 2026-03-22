@@ -1,0 +1,31 @@
+# Ignore everything
+*
+
+# But not this folder
+!pyblox/
+!pyblox/**
+
+# Keep LICENSE and README
+!LICENSE
+!README.md
+!generated-icon.png
+!pyproject.toml
+!.gitignore
+
+# ignore caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Extra protection for any sneaky caches
+*/__pycache__/
+*/*/__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
