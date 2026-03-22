@@ -92,7 +92,7 @@ class Thumbnails:
                 "userIds": user_ids,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )

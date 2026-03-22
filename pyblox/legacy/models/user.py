@@ -75,17 +75,32 @@ class User:
             sort_order
         )
 
-    async def avatar_thumbnail(self) -> models.ThumbnailResponse:
+    async def avatar_thumbnail(
+        self,
+        size: models.ThumbnailSize = models.ThumbnailSize.SIZE_30X30,
+        format: models.ThumbnailFormat = models.ThumbnailFormat.PNG,
+        is_circular: bool = False
+    ) -> models.ThumbnailResponse:
         thumbnail_data: list[models.ThumbnailResponse] = await self.thumbnails.users_avatar([self.id])
         return thumbnail_data[0]
 
     async def avatar_thumbnail_3d(self) -> models.ThumbnailResponse:
         return await self.thumbnails.user_avatar_3d(self.id)
 
-    async def  avatar_bust_thumbnail(self) -> models.ThumbnailResponse:
+    async def  avatar_bust_thumbnail(
+        self,
+        size: models.ThumbnailSize = models.ThumbnailSize.SIZE_48X48,
+        format: models.ThumbnailFormat = models.ThumbnailFormat.PNG,
+        is_circular: bool = False
+    ) -> models.ThumbnailResponse:
         thumbnail_data: list[models.ThumbnailResponse] = await self.thumbnails.avatar_bust([self.id])
         return thumbnail_data[0]
 
-    async def  avatar_headshot_thumbnail(self) -> models.ThumbnailResponse:
+    async def  avatar_headshot_thumbnail(
+        self,
+        size: models.ThumbnailSize = models.ThumbnailSize.SIZE_48X48,
+        format: models.ThumbnailFormat = models.ThumbnailFormat.PNG,
+        is_circular: bool = False
+    ) -> models.ThumbnailResponse:
         thumbnail_data: list[models.ThumbnailResponse] = await self.thumbnails.avatar_headshot([self.id])
         return thumbnail_data[0]
