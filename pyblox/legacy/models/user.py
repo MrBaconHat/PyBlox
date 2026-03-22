@@ -1,10 +1,15 @@
-from datetime import datetime
+from __future__ import annotations
 from typing import TYPE_CHECKING
+
+from datetime import datetime
 
 from .usernamehistory import UsernameHistory
 
 from ..utils.requests import make_request
 from .. import types
+from .. import models
+
+from ..thumbnails import Thumbnails
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -12,6 +17,7 @@ if TYPE_CHECKING:
 class User:
     def __init__(self, client: "Client", data: dict):
         self.__client = client
+        self.thumbnails = Thumbnails(self.__client)
         
         self.id: int = data.get("id")
         self.name: str = data.get("name")
@@ -68,3 +74,7 @@ class User:
             cursor,
             sort_order
         )
+
+    async def avatar_thumbnail(self) -> models.Thumbnail:
+        thumbnail_data: list[models.Thumbnail] = await self.thumbnails.users_avatar([self.id])
+        return thumbnail_data[0]
