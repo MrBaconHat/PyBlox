@@ -34,7 +34,7 @@ class Thumbnails:
                 "assetIds": asset_ids,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -72,7 +72,7 @@ class Thumbnails:
                 "bundleIds": bundle_ids,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -126,7 +126,7 @@ class Thumbnails:
                 "userIds": user_id,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -146,7 +146,7 @@ class Thumbnails:
                 "userIds": user_id,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -166,7 +166,7 @@ class Thumbnails:
                 "badgeIds": badge_ids,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -186,7 +186,7 @@ class Thumbnails:
                 "developerProductIds": developer_product_ids,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -206,7 +206,7 @@ class Thumbnails:
                 "gamePassIds": gamepass_ids,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -226,7 +226,7 @@ class Thumbnails:
                 "groupIds": group_ids,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -265,7 +265,7 @@ class Thumbnails:
                 "userOutfitIds": user_outfit_ids,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -287,7 +287,7 @@ class Thumbnails:
                 "thumbnailIds": thumbnailIds,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -309,7 +309,7 @@ class Thumbnails:
                 "returnPolicy": return_policy.value,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
@@ -342,7 +342,7 @@ class Thumbnails:
                 "returnPolicy": return_policy.value,
                 "size": size.value,
                 "format": format.value,
-                "isCircular": is_circular
+                "isCircular": str(is_circular).lower()
             },
             headers=self.__client.headers
         )
