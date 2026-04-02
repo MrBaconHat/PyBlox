@@ -15,36 +15,42 @@ class HTTPClient:
         params: dict | None = None,
         json: dict | None = None
     ):
-        async with aiohttp.ClientSession() as self.__session:
-            async with self.__session.request(
+        async with aiohttp.ClientSession() as session:
+            async with session.request(
                 method=method,
                 url=url,
                 headers=headers,
                 params=params,
                 json=json
             ) as response:
-                return await 
+                status = response.status
+                resp_headers = response.headers
+                try:
+                    body = await response.json()
+                except Exception:
+                    body = await response.text()
+                return status, resp_headers, body
 
     async def __get_x_csfr_token(self) -> str | None:
-        response = await self.__make_request(
+        status, headers, _ = await self.__make_request(
             method="GET",
             url="https://users.roblox.com/v1/users/authenticated",
             headers={
                 "Cookie": f".ROBLOSECURITY={self.__cookie}"
             }
         )
-        if response.status == 403:
-            return response.headers.get("x-csfr-token")
+        if status == 403:
+            return headers.get("x-csfr-token")
         return None
 
     async def request(
         self,
         method: str,
-        url: str, 
+        url: str,
 
         # Request Data
-        headers: dict | None = None, 
-        params: dict | None = None, 
+        headers: dict | None = None,
+        params: dict | None = None,
         json: dict | None = None,
 
         # Authentications
@@ -68,14 +74,11 @@ class HTTPClient:
 
             headers["X-CSFR-TOKEN"] = self.__x_csfr_token_cache
 
-        response = await self.__make_request(
+        status, _, body = await self.__make_request(
             method=method,
             url=url,
             headers=headers,
             params=params,
             json=json
         )
-        if response.status == 200:
-            return 200, await response.json()
-
-        return response.status, await response.text()
+        return status, body
