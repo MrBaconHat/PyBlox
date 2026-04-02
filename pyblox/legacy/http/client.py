@@ -27,13 +27,12 @@ class HTTPClient:
                 resp_headers = response.headers
                 try:
                     body = await response.json()
-                    return status, resp_headers, body, "json"
                 except Exception:
                     body = await response.text()
-                    return status, resp_headers, body, "text"
+                return status, resp_headers, body
 
     async def __get_x_csfr_token(self) -> str | None:
-        status, headers, _, __ = await self.__make_request(
+        status, headers, _ = await self.__make_request(
             method="GET",
             url="https://users.roblox.com/v1/users/authenticated",
             headers={
@@ -75,7 +74,7 @@ class HTTPClient:
 
             headers["X-CSFR-TOKEN"] = self.__x_csfr_token_cache
 
-        status, _, body, __ = await self.__make_request(
+        status, _, body = await self.__make_request(
             method=method,
             url=url,
             headers=headers,
