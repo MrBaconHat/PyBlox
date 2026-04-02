@@ -1,11 +1,12 @@
 import aiohttp
 from typing import Any
 
-X_CSFR_TOKEN_CACHE: str | None = None
 
 class HTTPClient:
     def __init__(self, cookie=None):
         self.__cookie = cookie
+        self.__x_csfr_token_cache: str | None = None
+        self.__session: aiohttp.ClientSession | None = None
 
     async def __make_request(
         self,
@@ -15,17 +16,18 @@ class HTTPClient:
         params: dict | None = None,
         json: dict | None = None
     ):
-        async with aiohttp.ClientSession() as session:
-            async with session.request(
-                method=method,
-                url=url,
-                headers=headers,
-                params=params,
-                json=json
-            ) as response:
-                return response
+        if self.__session is None:
+            self.__session = aiohttp.ClientSession()
+        async with self.__session.request(
+            method=method,
+            url=url,
+            headers=headers,
+            params=params,
+            json=json
+        ) as response:
+            return response
 
-    async def __get_x_csfr_token(self) -> str:
+    async def __get_x_csfr_token(self) -> str | None:
         response = await self.__make_request(
             method="GET",
             url="https://users.roblox.com/v1/users/authenticated",
@@ -33,7 +35,9 @@ class HTTPClient:
                 "Cookie": f".ROBLOSECURITY={self.__cookie}"
             }
         )
-        return response.headers.get("x-csfr-token")
+        if response.status == 403:
+            return response.headers.get("x-csfr-token")
+        return None
 
     async def request(
         self,
@@ -61,10 +65,10 @@ class HTTPClient:
             headers["Cookie"] = f".ROBLOSECURITY={self.__cookie}"
 
         if x_csfr_token and self.__cookie:
-            if X_CSFR_TOKEN_CACHE is None:
-                X_CSFR_TOKEN_CACHE = await self.__get_x_csfr_token()
+            if self.__x_csfr_token_cache is None:
+                self.__x_csfr_token_cache = await self.__get_x_csfr_token()
 
-            headers["X-CSFR-TOKEN"] =  X_CSFR_TOKEN_CACHE
+            headers["X-CSFR-TOKEN"] = self.__x_csfr_token_cache
 
         response = await self.__make_request(
             method=method,
