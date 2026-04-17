@@ -1,4 +1,5 @@
 import aiohttp
+import asyncio
 from typing import Any
 
 
@@ -6,7 +7,13 @@ class HTTPClient:
     def __init__(self, cookie=None):
         self.__cookie = cookie
         self.__x_csfr_token_cache: str | None = None
+        self.__session: str | None = None
 
+    async def _get_session(self) -> aiohttp.ClientSession:
+        if self.__session is None:
+            self.__session = aiohttp.ClientSession()
+        return self.__session
+        
     async def __make_request(
         self,
         method: str,
@@ -15,21 +22,21 @@ class HTTPClient:
         params: dict | None = None,
         json: dict | None = None
     ):
-        async with aiohttp.ClientSession() as session:
-            async with session.request(
-                method=method,
-                url=url,
-                headers=headers,
-                params=params,
-                json=json
-            ) as response:
-                status = response.status
-                resp_headers = response.headers
-                try:
-                    body = await response.json()
-                except Exception:
-                    body = await response.text()
-                return status, resp_headers, body
+        session = await self._get_session()
+        async with session.request(
+            method=method,
+            url=url,
+            headers=headers,
+            params=params,
+            json=json
+        ) as response:
+            status = response.status
+            resp_headers = response.headers
+            try:
+                body = await response.json()
+            except Exception:
+                body = await response.text()
+            return status, resp_headers, body
 
     async def __get_x_csfr_token(self) -> str | None:
         status, headers, _ = await self.__make_request(
@@ -54,8 +61,11 @@ class HTTPClient:
         json: dict | None = None,
 
         # Authentications
-        x_csfr_token: bool = False,
-        cookie: bool = False
+        use_csfr: bool = False,
+        use_cookie: bool = False,
+
+        # Utils
+        retry: bool = True
     ):
         headers = headers or {}
 
@@ -65,20 +75,54 @@ class HTTPClient:
             "User-Agent": "PyBlox/0.1"
         })
 
-        if cookie and self.__cookie:
+        if use_cookie and self.__cookie:
             headers["Cookie"] = f".ROBLOSECURITY={self.__cookie}"
 
-        if x_csfr_token and self.__cookie:
+        if use_csfr and self.__cookie:
             if self.__x_csfr_token_cache is None:
                 self.__x_csfr_token_cache = await self.__get_x_csfr_token()
 
             headers["X-CSFR-TOKEN"] = self.__x_csfr_token_cache
 
-        status, _, body = await self.__make_request(
+        status, resp_headers, body = await self.__make_request(
             method=method,
             url=url,
             headers=headers,
             params=params,
             json=json
         )
-        return status, body
+        if status == 403 and use_csfr:
+            self.__x_csfr_token_cache = resp_headers.get("x-csfr-token")
+            return await self.request(
+                method=method,
+                url=url,
+                headers=headers,
+                params=params,
+                json=json,
+                use_csfr=use_csfr,
+                use_cookie=use_cookie
+            )
+
+        if status == 429 and retry:
+            await asyncio.sleep(1)
+            return await self.request(
+                method,
+                url,
+                headers,
+                params,
+                json,
+                use_cookie,
+                use_csfr,
+                retry=False
+            )
+
+        if status >= 400:
+            message = None
+
+            if isinstance(body, dict) and "errors" in body:
+                if body["errors"]:
+                    message = body["errors"][0].get("message")
+
+            raise Exception(f"{status}: {message or body}")
+            
+        return body

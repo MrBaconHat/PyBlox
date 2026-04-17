@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from .http.client import HTTPClient
+
+# --------- SERVICES ----------
 from .services.user.service import UserService
+from .services.thumbnail.service import ThumbnailService
 
 class Client:
     def __init__(self, cookie=None):
@@ -11,3 +14,4 @@ class Client:
 
         # services
         self.user = UserService(self)
+        self.thumbnail =  ThumbnailService(self)
