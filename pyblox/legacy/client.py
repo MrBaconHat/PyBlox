@@ -2,10 +2,7 @@ import asyncio
 from typing import TYPE_CHECKING
 from .utils.requests import make_request
 
-from .models import User
-from .models import AuthenticatedUser
-from .models import UsernameHistory
-from .models import UserSearch
+from .models import *
 
 from .types import SortOrder
 

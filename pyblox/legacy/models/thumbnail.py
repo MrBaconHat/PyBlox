@@ -10,7 +10,7 @@ class ThumbnailResponse:
 class ThumbnailFormat(Enum):
     PNG = "png"
     JPEG = "jpeg"
-    WEBP = "Webp"
+    WEBP = "webp"
 
 class ThumbnailSize(Enum):
     SIZE_30X30 = "30x30"
