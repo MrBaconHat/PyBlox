@@ -257,12 +257,11 @@ class ThumbnailService:
         self,
         batch: ThumbnailBatch
     ) -> list[Thumbnail]:
+        print(batch.to_dict())
         data = await self.__client.http.request(
             method="POST",
-            url=f"{self.__API_URL}/batches",
-            json={
-                "batch": batch
-            }
+            url=f"{self.__API_URL}/batch",
+            json=batch.to_dict()
         )
         return self._parse_thumbnails(data)
 

@@ -82,7 +82,7 @@ class HTTPClient:
         headers.update({
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "PyBlox/0.1"
+            "User-Agent": "PyBlox/0.1.1"
         })
 
         if use_cookie and self.__cookie:
