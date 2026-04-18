@@ -1,8 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from datetime import date
+
 if TYPE_CHECKING:
     from ....client import Client
+
+    # ------ Models ------
+    from ..services.thumbnail.model import Thumbnail
 
 class User:
     def __init__(self, client: Client, data: dict):
@@ -29,6 +34,42 @@ class User:
              "external_app_display_name": self.external_app_display_name,
             "has_verified_badge": self.has_verified_badge
         }
+
+    @property
+    async def birthdate(self) -> date:
+        return await self.__client.user.birthdate()
+
+    @property
+    async def gender(self) -> int:
+        return await self.__client.user.gender()
+
+    @property
+    async def age_bracket(self) -> int:
+        return await self.__client.user.age_bracket()
+
+    @property
+    async def country_code(self) -> str | None:
+        return await self.__client.user.country_code()
+
+    @property
+    async def roles(self) -> list[str]:
+        return await self.__client.user.roles()
+
+    @property
+    async def avatar(self) -> Thumbnail:
+        return await self.__client.user.user_avatar(self.id)
+
+    @property
+    async def avatar_headshot(self) -> Thumbnail:
+        return await self.__client.user.user_avatar_headshot(self.id)
+
+    @property
+    async def avatar_bust(self) -> Thumbnail:
+        return await self.__client.user.user_avatar_bust(self.id)
+
+    @property
+    async def username_history(self) -> Thumbnail:
+        return await self.__client.user.username_history(self.id)
 
 
 class AuthenticatedUser(User):

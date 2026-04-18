@@ -2,21 +2,21 @@ from __future__ import annotations
 
 import datetime
 
-from .model import (
-    User,
-    AuthenticatedUser,
-    PartialUser,
-    SearchUser,
-    UserSearchResult,
-    UsernameHistoryResult
-)
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ....client import Client
 
     # ------ Models ------
+    from .model import (
+        User,
+        AuthenticatedUser,
+        PartialUser,
+        SearchUser,
+        UserSearchResult,
+        UsernameHistoryResult
+    )
+    
     from ..services.thumbnail.model import Thumbnail
 
 class UserService:
@@ -28,7 +28,8 @@ class UserService:
     # ==============================
     # Accounts
     # ==============================
-    async def get_birthdate(self) -> datetime.date:
+    @property
+    async def birthdate(self) -> datetime.date:
         """
         [COOKIE]
         Get the user's birthdate
@@ -44,7 +45,7 @@ class UserService:
             data["birthDay"]
         )
 
-    async def update_birthdate(
+    async def birthdate_update(
         self,
         birth_month: int,
         birth_day: int,
@@ -68,7 +69,8 @@ class UserService:
         )
         return True  # success (no exception
 
-    async def get_gender(self) -> int:
+    @property
+    async def gender(self) -> int:
         """
         [COOKIE]
         Get the user's gender
@@ -80,7 +82,7 @@ class UserService:
         )
         return data.get("gender")
 
-    async def update_gender(self, gender: int) -> bool:
+    async def gender_update(self, gender: int) -> bool:
         """
         [COOKIE]
         Update the user's gender
@@ -109,7 +111,8 @@ class UserService:
         user: User = await self.get_user(data["id"])
         return AuthenticatedUser(self.__client, user.to_dict())
 
-    async def get_age_bracket(self) -> int:
+    @property
+    async def age_bracket(self) -> int:
         """
         [COOKIE]
         Gets the age bracket of the authenticated user.
@@ -121,7 +124,8 @@ class UserService:
         )
         return data.get("ageBracket")
 
-    async def get_country_code(self) -> str | None:
+    @property
+    async def country_code(self) -> str | None:
         """
         [COOKIE]
         Gets the country code of the authenticated user.
@@ -133,7 +137,8 @@ class UserService:
         )
         return data.get("countryCode")
 
-    async def get_roles(self) -> list[str]:
+    @property
+    async def roles(self) -> list[str]:
         """
         [COOKIE]
         Gets the roles of the authenticated user.
@@ -149,7 +154,8 @@ class UserService:
     # User Profiles
     # ==============================
 
-    async def get_description(self) -> str | None:
+    @property
+    async def description(self) -> str | None:
         """
         [COOKIE]
         Gets the description of the authenticated user.
@@ -161,7 +167,7 @@ class UserService:
         )
         return data.get("description")
 
-    async def update_description(self, description: str) -> str | None:
+    async def description_update(self, description: str) -> str | None:
         """
         [COOKIE]
         Updates the description of the authenticated user.
@@ -223,7 +229,9 @@ class UserService:
         return UsernameHistoryResult(
             client=self.__client,
             user_id=user_id,
-            data=data
+            data=data,
+            limit=limit,
+            sort_order=sort_order
         )
 
     # ==============================
