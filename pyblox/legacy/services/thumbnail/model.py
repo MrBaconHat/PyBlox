@@ -53,7 +53,7 @@ class ThumbnailBatch:
         type: ThumbnailBatchTypes,
         
         token: str = "",
-        alias: str = "",,
+        alias: str = "",
         size: str = "30x30",
         format: str = "Png",
         is_circular: bool = False,

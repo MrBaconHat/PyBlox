@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .models import Thumbnail, ThumbnailMetadata, ThumbnailBatch
+from .model import Thumbnail, ThumbnailMetadata, ThumbnailBatch
 
 from typing import TYPE_CHECKING
 

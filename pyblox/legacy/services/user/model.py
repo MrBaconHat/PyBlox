@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 
 from datetime import date
 
+from proxies import FetchProxy
+
 if TYPE_CHECKING:
     from ....client import Client
 
@@ -23,6 +25,8 @@ class User:
         self.external_app_display_name = data.get("externalAppDisplayName")
         self.has_verified_badge = data.get("hasVerifiedBadge")
 
+        self.__proxy = FetchProxy
+
     def to_dict(self):
         return {
             "name": self.name,
@@ -36,8 +40,8 @@ class User:
         }
 
     @property
-    async def birthdate(self) -> date:
-        return await self.__client.user.birthdate()
+    def birthdate(self) -> date:
+        return self.__proxy(self.__client.user.birthdate())
 
     @property
     async def gender(self) -> int:
@@ -56,8 +60,8 @@ class User:
         return await self.__client.user.roles()
 
     @property
-    async def avatar(self) -> Thumbnail:
-        return await self.__client.user.user_avatar(self.id)
+    def avatar(self) -> Thumbnail:
+        return self.__proxy(self.__client.user.user_avatar, self.id)
 
     @property
     async def avatar_headshot(self) -> Thumbnail:
