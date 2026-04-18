@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING
 
 from datetime import date
 
-from ...proxies import FetchProxy
-
 if TYPE_CHECKING:
     from ....client import Client
 
@@ -24,8 +22,6 @@ class User:
         self.is_banned = data.get("isBanned")
         self.external_app_display_name = data.get("externalAppDisplayName")
         self.has_verified_badge = data.get("hasVerifiedBadge")
-
-        self.__proxy = FetchProxy
 
     def to_dict(self):
         return {

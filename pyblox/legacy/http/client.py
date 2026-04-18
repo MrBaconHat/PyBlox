@@ -14,6 +14,16 @@ class HTTPClient:
             self.__session = aiohttp.ClientSession()
         return self.__session
         
+    @staticmethod
+    def __sanitize_params(params: dict | None) -> dict | None:
+        if params is None:
+            return None
+        return {
+            k: str(v).lower() if isinstance(v, bool) else v
+            for k, v in params.items()
+            if v is not None
+        }
+
     async def __make_request(
         self,
         method: str,
@@ -27,7 +37,7 @@ class HTTPClient:
             method=method,
             url=url,
             headers=headers,
-            params=params,
+            params=self.__sanitize_params(params),
             json=json
         ) as response:
             status = response.status
