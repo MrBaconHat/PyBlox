@@ -1,12 +1,13 @@
-from .client import Client
-
-from .types import (
+from ..services.user.model import (
     User,
     AuthenticatedUser,
     PartialUser,
     SearchUser,
     UserSearchResult,
     UsernameHistoryResult,
+)
+
+from ..services.thumbnail.model import (
     Thumbnail,
     ThumbnailMetadata,
     ThumbnailBatch,
@@ -14,7 +15,6 @@ from .types import (
 )
 
 __all__ = [
-    "Client",
     # User
     "User",
     "AuthenticatedUser",
