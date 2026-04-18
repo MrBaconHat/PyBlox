@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING
 
 from datetime import date
 
-from proxies import FetchProxy
+from ...proxies import FetchProxy
 
 if TYPE_CHECKING:
     from ....client import Client
 
     # ------ Models ------
-    from ..services.thumbnail.model import Thumbnail
+    from ..thumbnail.model import Thumbnail
 
 class User:
     def __init__(self, client: Client, data: dict):
@@ -39,41 +39,75 @@ class User:
             "has_verified_badge": self.has_verified_badge
         }
 
-    @property
-    def birthdate(self) -> date:
-        return self.__proxy(self.__client.user.birthdate())
+    async def birthdate(self) -> date:
+        return await self.__client.user.birthdate()
 
-    @property
     async def gender(self) -> int:
         return await self.__client.user.gender()
 
-    @property
     async def age_bracket(self) -> int:
         return await self.__client.user.age_bracket()
 
-    @property
     async def country_code(self) -> str | None:
         return await self.__client.user.country_code()
 
-    @property
     async def roles(self) -> list[str]:
         return await self.__client.user.roles()
 
-    @property
-    def avatar(self) -> Thumbnail:
-        return self.__proxy(self.__client.user.user_avatar, self.id)
+    async def avatar(
+        self,
+        size: str = "420x420",
+        format: str = "Png",
+        is_circular: bool = False
+    ) -> Thumbnail:
+        thumbnails = await self.__client.thumbnail.user_avatar(
+            user_ids=[self.id],
+            size=size,
+            format=format,
+            is_circular=is_circular
+        )
+        return thumbnails[0]
 
-    @property
-    async def avatar_headshot(self) -> Thumbnail:
-        return await self.__client.user.user_avatar_headshot(self.id)
+    async def avatar_headshot(
+            self,
+            size: str = "420x420",
+            format: str = "Png",
+            is_circular: bool = False
+        ) -> Thumbnail:
+        thumbnails = await self.__client.thumbnail.user_avatar_headshot(
+            user_ids=[self.id],
+            size=size,
+            format=format,
+            is_circular=is_circular
+        )
+        return thumbnails[0]
 
-    @property
-    async def avatar_bust(self) -> Thumbnail:
-        return await self.__client.user.user_avatar_bust(self.id)
+    async def avatar_bust(
+        self,
+        size: str = "420x420",
+        format: str = "Png",
+        is_circular: bool = False
+    ) -> Thumbnail:
+        thumbnails = await self.__client.thumbnail.user_avatar_bust(
+            user_ids=[self.id],
+            size=size,
+            format=format,
+            is_circular=is_circular
+        )
+        return thumbnails[0]
 
-    @property
-    async def username_history(self) -> Thumbnail:
-        return await self.__client.user.username_history(self.id)
+    async def username_history(
+        self,
+        limit: int = 10,
+        sort_order: str = "Asc",
+        cursor: str | None = None
+    ) -> UsernameHistoryResult:
+        return await self.__client.user.username_history(
+            self.id,
+            limit=limit,
+            sort_order=sort_order,
+            cursor=cursor
+        )
 
 
 class AuthenticatedUser(User):
@@ -177,7 +211,7 @@ class UsernameHistoryResult:
         if self.previous_page_cursor is None:
             raise Exception("No previous page cursor")
 
-        return await self.__client.user. get_username_history(
+        return await self.__client.user.get_username_history(
             self.__user_id,
             limit=self.__limit,
             sort_order=self.__sort_order,

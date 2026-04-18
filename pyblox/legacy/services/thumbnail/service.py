@@ -255,7 +255,7 @@ class ThumbnailService:
     #  ---------- THUMBNAILS ----------
     async def batch(
         self,
-        batch: list[ThumbnailBatch]
+        batch: ThumbnailBatch
     ) -> list[Thumbnail]:
         data = await self.__client.http.request(
             method="POST",

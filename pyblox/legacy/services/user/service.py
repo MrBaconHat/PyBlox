@@ -2,21 +2,22 @@ from __future__ import annotations
 
 import datetime
 
+# ------ Service Models ------
+from .model import (
+    User,
+    AuthenticatedUser,
+    PartialUser,
+    SearchUser,
+    UserSearchResult,
+    UsernameHistoryResult
+)
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ....client import Client
 
-    # ------ Models ------
-    from .model import (
-        User,
-        AuthenticatedUser,
-        PartialUser,
-        SearchUser,
-        UserSearchResult,
-        UsernameHistoryResult
-    )
-    
+    # ------- External Models -------
     from ..services.thumbnail.model import Thumbnail
 
 class UserService:
@@ -28,7 +29,7 @@ class UserService:
     # ==============================
     # Accounts
     # ==============================
-    @property
+    
     async def birthdate(self) -> datetime.date:
         """
         [COOKIE]
@@ -69,7 +70,6 @@ class UserService:
         )
         return True  # success (no exception
 
-    @property
     async def gender(self) -> int:
         """
         [COOKIE]
@@ -111,7 +111,6 @@ class UserService:
         user: User = await self.get_user(data["id"])
         return AuthenticatedUser(self.__client, user.to_dict())
 
-    @property
     async def age_bracket(self) -> int:
         """
         [COOKIE]
@@ -124,7 +123,6 @@ class UserService:
         )
         return data.get("ageBracket")
 
-    @property
     async def country_code(self) -> str | None:
         """
         [COOKIE]
@@ -153,8 +151,7 @@ class UserService:
     # ==============================
     # User Profiles
     # ==============================
-
-    @property
+    
     async def description(self) -> str | None:
         """
         [COOKIE]
@@ -182,7 +179,7 @@ class UserService:
         )
         return data.get("description")
 
-    async def get_user(self, user_id: int) -> User:
+    async def get(self, user_id: int) -> User:
         """
         Gets the user by the user id.
         """
@@ -207,7 +204,7 @@ class UserService:
         )
         return True  # success (no exception)
 
-    async def get_username_history(
+    async def username_history(
         self,
         user_id: int,
         limit: int = 10,
@@ -238,11 +235,11 @@ class UserService:
     # Users
     # ==============================
 
-    async def get_users_by_usernames(
+    async def by_usernames(
         self,
         usernames: list[str],
         exclude_banned_users: bool = True
-    ) -> list[SearchUser]:
+    ) -> list[PartialUser]:
         """
         Gets the users by the usernames.
         """
@@ -256,7 +253,7 @@ class UserService:
         )
         return [SearchUser(self.__client, user) for user in data["data"]]
 
-    async def get_users_by_ids(
+    async def by_ids(
         self,
         user_ids: list[int],
         exclude_banned_users: bool = True
@@ -291,9 +288,9 @@ class UserService:
             },
             use_cookie=True
         )
-        return True  # success (no exception
+        return True
 
-    async def search_users(
+    async def search(
         self,
         keyword: str,
         session_id: str | None = None,
@@ -323,48 +320,3 @@ class UserService:
             },
             data=data
         )
-
-    async def user_avatar(
-        self,
-        user_id: int,
-        size: str = "420x420",
-        format: str = "Png",
-        is_circular: bool = False
-    ) -> Thumbnail:
-        thumbnail: list[Thumbnail] = await self.__client.thumbnail.user_avatar(
-            user_ids=[user_id],
-            size=size,
-            format=format,
-            is_circular=is_circular
-        )
-        return thumbnail[0]
-
-    async def user_avatar_headshot(
-        self,
-        user_id: int,
-        size: str = "420x420",
-        format: str = "Png",
-        is_circular: bool = False
-    ) -> Thumbnail:
-        thumbnail: list[Thumbnail] = await self.__client.thumbnail.user_avatar_headshot(
-            user_ids=[user_id],
-            size=size,
-            format=format,
-            is_circular=is_circular
-        )
-        return thumbnail[0]
-
-    async def user_avatar_bust(
-        self,
-        user_id: int,
-        size: str = "420x420",
-        format: str = "Png",
-        is_circular: bool = False
-    ) -> Thumbnail:
-        thumbnail: list[Thumbnail] = await self.__client.thumbnail.user_avatar_bust(
-            user_ids=[user_id],
-            size=size,
-            format=format,
-            is_circular=is_circular
-        )
-        return thumbnail[0]

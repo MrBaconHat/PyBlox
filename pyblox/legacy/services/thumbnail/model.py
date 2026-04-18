@@ -46,12 +46,15 @@ class ThumbnailBatchTypes(Enum):
 
 
 class ThumbnailBatch:
-    def __init__(
+    def __init__(self):
+         self._batches: list[dict] = []
+
+    def add(
         self,
         request_id: str,
         target_id: int,
         type: ThumbnailBatchTypes,
-        
+
         token: str = "",
         alias: str = "",
         size: str = "30x30",
@@ -59,29 +62,21 @@ class ThumbnailBatch:
         is_circular: bool = False,
         access_context: str = "",
         head_shape: str = ""
-        
     ):
-         self.__request_id = request_id
-         self.__target_id = target_id
-         self.__token = token
-         self.__alias = alias
-         self.__type = type.value
-         self.__size = size
-         self.__format = format
-         self.__is_circular = is_circular
-         self.__access_context = access_context
-         self.__head_shape = head_shape
+        self._batches.append(
+            {
+                "requestId": request_id,
+                "targetId": target_id,
+                "token": token,
+                "alias": alias,
+                "type": type.value,
+                "size": size,
+                "format": format,
+                "isCircular": is_circular,
+                "accessContext": access_context,
+                "headShape": head_shape
+            }
+        )
 
     def to_dict(self):
-        return {
-            "requestId": self.__request_id,
-            "targetId": self.__target_id,
-            "token": self.__token,
-            "alias": self.__alias,
-            "type": self.__type,
-            "size": self.__size,
-            "format": self.__format,
-            "isCircular": self.__is_circular,
-            "accessContext": self.__access_context,
-            "headShape": self.__head_shape
-        }
+        return self._batches
