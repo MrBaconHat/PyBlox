@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .models import Thumbnail, ThumbnailMetadata, ThumbnailBatch
+from .model import Thumbnail, ThumbnailMetadata, ThumbnailBatch, ThumbnailBatchTypes
 
 from typing import TYPE_CHECKING
 
@@ -11,8 +11,10 @@ if TYPE_CHECKING:
 class ThumbnailService:
     def __init__(self, client: Client):
         self.__client = client
-
         self.__API_URL = "https://thumbnails.roblox.com/v1"
+
+        self.BatchTypes = ThumbnailBatchTypes
+        self.Batch = ThumbnailBatch
 
     def _parse_thumbnails(self, data):
         return [
@@ -255,14 +257,12 @@ class ThumbnailService:
     #  ---------- THUMBNAILS ----------
     async def batch(
         self,
-        batch: list[ThumbnailBatch]
+        batch: ThumbnailBatch
     ) -> list[Thumbnail]:
         data = await self.__client.http.request(
             method="POST",
-            url=f"{self.__API_URL}/batches",
-            json={
-                "batch": batch
-            }
+            url=f"{self.__API_URL}/batch",
+            json=batch.to_list()
         )
         return self._parse_thumbnails(data)
 
