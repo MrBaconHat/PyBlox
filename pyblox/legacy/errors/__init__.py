@@ -5,8 +5,10 @@ from .registry import ERROR_RP
 
 
 __all__ = [
+    # Main
     "RBLXException",
-    
+
+    # Base
     "TooShort",
     "TooLong",
     "Moderated",
@@ -25,6 +27,15 @@ __all__ = [
     "MissingBirthdate",
     "TooManyUsernames",
     "TooManyIds",
+
+    # User
+    "InvalidBirthdate",
+    "InvalidPassword",
+    "InvalidGender",
+    "MissingBirthdate",
+    "TooManyUsernames",
+    "TooManyIds"
+    
     
     "ERROR_RP"
 ]

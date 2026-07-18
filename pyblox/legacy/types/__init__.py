@@ -14,6 +14,14 @@ from ..services.thumbnail.model import (
     ThumbnailBatchTypes,
 )
 
+from ..services.groups.model import (
+    Group,
+    Shout,
+    Poster,
+    Role,
+    FriendsGroups
+)
+
 __all__ = [
     # User
     "User",
@@ -22,9 +30,17 @@ __all__ = [
     "SearchUser",
     "UserSearchResult",
     "UsernameHistoryResult",
+    
     # Thumbnail
     "Thumbnail",
     "ThumbnailMetadata",
     "ThumbnailBatch",
     "ThumbnailBatchTypes",
+
+    # Groups
+    "Group",
+    "Shout",
+    "Poster",
+    "Role",
+    "FriendsGroups"
 ]
