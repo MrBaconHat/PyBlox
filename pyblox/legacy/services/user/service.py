@@ -95,20 +95,24 @@ class UserService:
             },
             use_cookie=True
         )
-        return True  # success (no exception
+        return True
 
-    async def get_authenticated_user(self) -> AuthenticatedUser:
+    async def get_authenticated_user(self) -> AuthenticatedUser | None:
         """
         [COOKIE]
         Gets the minimal authenticated user.
         """
-        data = await self.__client.http.request(
+        status, data = await self.__client.http.request(
             method="GET",
             url=f"{self.__API_URL}/users/authenticated",
-            use_cookie=True
+            use_cookie=True,
+            exception=False
         )
 
-        user: User = await self.get_user(data["id"])
+        if status == 401:
+            return None
+            
+        user: User = await self.get(data["id"])
         return AuthenticatedUser(self.__client, user.to_dict())
 
     async def age_bracket(self) -> int:
@@ -135,7 +139,6 @@ class UserService:
         )
         return data.get("countryCode")
 
-    @property
     async def roles(self) -> list[str]:
         """
         [COOKIE]

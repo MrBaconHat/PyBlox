@@ -78,5 +78,5 @@ class ThumbnailBatch:
             }
         )
 
-    def to_dict(self):
+    def to_list(self):
         return self._batches
