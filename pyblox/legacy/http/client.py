@@ -1,13 +1,17 @@
+import re
+
 import aiohttp
 import asyncio
 from typing import Any
+
+from ..errors import RBLXException, ERROR_RP
 
 
 class HTTPClient:
     def __init__(self, cookie=None):
         self.__cookie = cookie
-        self.__x_csfr_token_cache: str | None = None
-        self.__session: str | None = None
+        self.__x_csrf_token_cache: str | None = None
+        self.__session: aiohttp.ClientSession | None = None
 
     async def _get_session(self) -> aiohttp.ClientSession:
         if self.__session is None:
@@ -38,7 +42,7 @@ class HTTPClient:
                 body = await response.text()
             return status, resp_headers, body
 
-    async def __get_x_csfr_token(self) -> str | None:
+    async def __get_x_csrf_token(self) -> str | None:
         status, headers, _ = await self.__make_request(
             method="GET",
             url="https://users.roblox.com/v1/users/authenticated",
@@ -47,7 +51,7 @@ class HTTPClient:
             }
         )
         if status == 403:
-            return headers.get("x-csfr-token")
+            return headers.get("x-csrf-token")
         return None
 
     async def request(
@@ -61,7 +65,7 @@ class HTTPClient:
         json: dict | None = None,
 
         # Authentications
-        use_csfr: bool = False,
+        use_csrf: bool = False,
         use_cookie: bool = False,
 
         # Utils
@@ -72,17 +76,17 @@ class HTTPClient:
         headers.update({
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "PyBlox/0.1"
+            "User-Agent": "PyBlox/0.3"
         })
 
         if use_cookie and self.__cookie:
             headers["Cookie"] = f".ROBLOSECURITY={self.__cookie}"
 
-        if use_csfr and self.__cookie:
+        if use_csrf and self.__cookie:
             if self.__x_csfr_token_cache is None:
-                self.__x_csfr_token_cache = await self.__get_x_csfr_token()
+                self.__x_csfr_token_cache = await self.__get_x_csrf_token()
 
-            headers["X-CSFR-TOKEN"] = self.__x_csfr_token_cache
+            headers["X-CSRF-TOKEN"] = self.__x_csrf_token_cache
 
         status, resp_headers, body = await self.__make_request(
             method=method,
@@ -91,20 +95,27 @@ class HTTPClient:
             params=params,
             json=json
         )
-        if status == 403 and use_csfr:
-            self.__x_csfr_token_cache = resp_headers.get("x-csfr-token")
+
+        error = body.get("errors", [{}])[0]
+        subcode = error.get("subcode", "None")
+        message = error.get("message")
+        
+        if status == 403 and use_csrf and subcode == 0:
+            self.__x_csfr_token_cache = resp_headers.get("x-csrf-token")
             return await self.request(
                 method=method,
                 url=url,
                 headers=headers,
                 params=params,
                 json=json,
-                use_csfr=use_csfr,
+                use_csrf=use_csrf,
                 use_cookie=use_cookie
             )
 
         if status == 429 and retry:
-            await asyncio.sleep(1)
+            # Get ratelimit expiration from headers
+            retry_after = int(resp_headers.get("Retry-After", 1))
+            await asyncio.sleep(retry_after)
             return await self.request(
                 method,
                 url,
@@ -112,17 +123,18 @@ class HTTPClient:
                 params,
                 json,
                 use_cookie,
-                use_csfr,
+                use_csrf,
                 retry=False
             )
 
         if status >= 400:
-            message = None
+            split_url = url.split("/")
+            dirty_endpoint = "/".join(split_url[3:])
 
-            if isinstance(body, dict) and "errors" in body:
-                if body["errors"]:
-                    message = body["errors"][0].get("message")
-
-            raise Exception(f"{status}: {message or body}")
+            # Replace all {.*?} with {}
+            endpoint = re.sub(r"\{.*?\}", "{}", dirty_endpoint)
+            
+            error = ERROR_RP.get(endpoint, {}).get(status, {}).get(subcode, RBLXException)
+            raise error(message, status, subcode, url)
             
         return body
