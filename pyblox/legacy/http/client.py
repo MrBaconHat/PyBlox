@@ -6,8 +6,8 @@ from typing import Any
 class HTTPClient:
     def __init__(self, cookie=None):
         self.__cookie = cookie
-        self.__x_csfr_token_cache: str | None = None
-        self.__session: str | None = None
+        self.__x_csrf_token_cache: str | None = None
+        self.__session: aiohttp.ClientSession | None = None
 
     async def _get_session(self) -> aiohttp.ClientSession:
         if self.__session is None:
@@ -48,7 +48,7 @@ class HTTPClient:
                 body = await response.text()
             return status, resp_headers, body
 
-    async def __get_x_csfr_token(self) -> str | None:
+    async def __get_x_csrf_token(self) -> str | None:
         status, headers, _ = await self.__make_request(
             method="GET",
             url="https://users.roblox.com/v1/users/authenticated",
@@ -57,7 +57,7 @@ class HTTPClient:
             }
         )
         if status == 403:
-            return headers.get("x-csfr-token")
+            return headers.get("x-csrf-token")
         return None
 
     async def request(
@@ -65,17 +65,18 @@ class HTTPClient:
         method: str,
         url: str,
 
-        # Request Data
+        # ---- Request Data ----
         headers: dict | None = None,
         params: dict | None = None,
         json: dict | None = None,
 
-        # Authentications
-        use_csfr: bool = False,
+        # ---- Authentications ----
+        use_csrf: bool = False,
         use_cookie: bool = False,
 
-        # Utils
-        retry: bool = True
+        # ---- Utils ----
+        retry: bool = True,
+        exception: bool = True
     ):
         headers = headers or {}
 
@@ -88,11 +89,11 @@ class HTTPClient:
         if use_cookie and self.__cookie:
             headers["Cookie"] = f".ROBLOSECURITY={self.__cookie}"
 
-        if use_csfr and self.__cookie:
-            if self.__x_csfr_token_cache is None:
-                self.__x_csfr_token_cache = await self.__get_x_csfr_token()
+        if use_csrf and self.__cookie:
+            if self.__x_csrf_token_cache is None:
+                self.__x_csrf_token_cache = await self.__get_x_csrf_token()
 
-            headers["X-CSFR-TOKEN"] = self.__x_csfr_token_cache
+            headers["X-CSRF-TOKEN"] = self.__x_csrf_token_cache
 
         status, resp_headers, body = await self.__make_request(
             method=method,
@@ -101,32 +102,33 @@ class HTTPClient:
             params=params,
             json=json
         )
-        if status == 403 and use_csfr:
-            self.__x_csfr_token_cache = resp_headers.get("x-csfr-token")
+        if status == 403 and use_csrf:
+            self.__x_csrf_token_cache = resp_headers.get("x-csrf-token")
             return await self.request(
                 method=method,
                 url=url,
                 headers=headers,
                 params=params,
                 json=json,
-                use_csfr=use_csfr,
-                use_cookie=use_cookie
+                use_csrf=use_csrf,
+                use_cookie=use_cookie 
             )
 
         if status == 429 and retry:
             await asyncio.sleep(1)
             return await self.request(
-                method,
-                url,
-                headers,
-                params,
-                json,
-                use_cookie,
-                use_csfr,
-                retry=False
+                method=method,
+                url=url,
+                headers=headers,
+                params=params,
+                json=json,
+                use_cookie=use_cookie,
+                use_csrf=use_csrf,
+                retry=False,
+                exception=exception
             )
 
-        if status >= 400:
+        if status >= 400 and exception:
             message = None
 
             if isinstance(body, dict) and "errors" in body:
@@ -134,5 +136,8 @@ class HTTPClient:
                     message = body["errors"][0].get("message")
 
             raise Exception(f"{status}: {message or body}")
+
+        elif status >= 400 and not exception:
+            return status, body
             
         return body
