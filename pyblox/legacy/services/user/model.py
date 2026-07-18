@@ -144,7 +144,7 @@ class PartialUser:
         self.id = data.get("id")
 
     async def fetch(self) -> User:
-        return await self.__client.user.get_user(self.id)
+        return await self.__client.user.get(self.id)
         
 
 class SearchUser(PartialUser):
@@ -175,7 +175,7 @@ class UserSearchResult:
         if self.next_page_cursor is None:
             raise Exception("No next page cursor")
 
-        return await self.__client.user.search_users(
+        return await self.__client.user.search(
             keyword=self.__keyword,
             session_id=self.__session_id,
             limit=self.__limit,
@@ -186,7 +186,7 @@ class UserSearchResult:
         if self.previous_page_cursor is None:
             raise Exception("No previous page cursor")
 
-        return await self.__client.user.search_users(
+        return await self.__client.user.search(
             keyword=self.__keyword,
             session_id=self.__session_id,
             limit=self.__limit,
@@ -220,7 +220,7 @@ class UsernameHistoryResult:
         if self.next_page_cursor is None:
             raise Exception("No next page cursor")
 
-        return await self.__client.user.get_username_history(
+        return await self.__client.user.username_history(
             self.__user_id,
             limit=self.__limit,
             sort_order=self.__sort_order,
@@ -231,7 +231,7 @@ class UsernameHistoryResult:
         if self.previous_page_cursor is None:
             raise Exception("No previous page cursor")
 
-        return await self.__client.user.get_username_history(
+        return await self.__client.user.username_history(
             self.__user_id,
             limit=self.__limit,
             sort_order=self.__sort_order,
