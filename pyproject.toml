@@ -1,6 +1,6 @@
 [project]
 name = "pyblox"
-version = "0.1.1"
+version = "0.0.1"
 description = "A wrapper for interacting with Roblox APIs"
 authors = [{name = "MrBaconHat"}]
 readme = "README.md"
