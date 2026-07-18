@@ -1,5 +1,7 @@
 from .base import *
-from .user import *
+
+# Services Exceptions
+from ..services.user.errors import *
 
 from .registry import ERROR_RP
 
@@ -35,7 +37,6 @@ __all__ = [
     "MissingBirthdate",
     "TooManyUsernames",
     "TooManyIds"
-    
     
     "ERROR_RP"
 ]

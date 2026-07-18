@@ -1,4 +1,4 @@
-from .base import RBLXException
+from ...errors.base import RBLXException
 
 # ================= ACCOUNTS =================
 
