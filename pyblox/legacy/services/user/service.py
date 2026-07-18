@@ -102,7 +102,7 @@ class UserService:
         [COOKIE]
         Gets the minimal authenticated user.
         """
-        status, data = await self.__client.http.request(
+        data = await self.__client.http.request(
             method="GET",
             url=f"{self.__API_URL}/users/authenticated",
             use_cookie=True
