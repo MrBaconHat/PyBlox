@@ -36,7 +36,7 @@ __all__ = [
     "InvalidGender",
     "MissingBirthdate",
     "TooManyUsernames",
-    "TooManyIds"
+    "TooManyIds",
     
     "ERROR_RP"
 ]
