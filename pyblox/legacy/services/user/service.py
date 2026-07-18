@@ -105,12 +105,8 @@ class UserService:
         status, data = await self.__client.http.request(
             method="GET",
             url=f"{self.__API_URL}/users/authenticated",
-            use_cookie=True,
-            exception=False
+            use_cookie=True
         )
-
-        if status == 401:
-            return None
             
         user: User = await self.get(data["id"])
         return AuthenticatedUser(self.__client, user.to_dict())
