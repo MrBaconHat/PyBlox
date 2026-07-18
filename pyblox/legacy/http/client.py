@@ -83,8 +83,8 @@ class HTTPClient:
             headers["Cookie"] = f".ROBLOSECURITY={self.__cookie}"
 
         if use_csrf and self.__cookie:
-            if self.__x_csfr_token_cache is None:
-                self.__x_csfr_token_cache = await self.__get_x_csrf_token()
+            if self.__x_csrf_token_cache is None:
+                self.__x_csrf_token_cache = await self.__get_x_csrf_token()
 
             headers["X-CSRF-TOKEN"] = self.__x_csrf_token_cache
 
@@ -101,7 +101,7 @@ class HTTPClient:
         message = error.get("message")
         
         if status == 403 and use_csrf and subcode == 0:
-            self.__x_csfr_token_cache = resp_headers.get("x-csrf-token")
+            self.__x_csrf_token_cache = resp_headers.get("x-csrf-token")
             return await self.request(
                 method=method,
                 url=url,
