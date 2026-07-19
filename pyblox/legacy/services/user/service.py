@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 
 # ------ Service Models ------
-from .model import (
+from ...types.user import (
     User,
     AuthenticatedUser,
     PartialUser,
@@ -270,7 +270,7 @@ class UserService:
         )
         return [PartialUser(self.__client, user) for user in data["data"]]
 
-    async def display_name_validate(
+    async def validate_display_name(
         self,
         user_id: int,
         display_name: str

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from ...types.group import Group, Role, FriendsGroups, Shout, Poster
+
 if TYPE_CHECKING:
-    from ....client import Client
+    from ...client import Client
 
 
 class GroupService:
@@ -168,4 +170,5 @@ class GroupService:
     async def users_friends_groups(
         self,
         user_id: int
-    )
+    ):
+        ...
