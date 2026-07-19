@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ...types.group import Group, Role, FriendsGroups, Shout, Poster
+from .types.group import Group, Role, FriendsGroups, Shout, Poster
 
 if TYPE_CHECKING:
-    from ...client import Client
+    from .client import Client
 
 
 class GroupService:

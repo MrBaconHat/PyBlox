@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 
 # ------ Service Models ------
-from ...types.user import (
+from .types.user import (
     User,
     AuthenticatedUser,
     PartialUser,
@@ -15,10 +15,10 @@ from ...types.user import (
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ...client import Client
+    from .client import Client
 
     # ------- External Models -------
-    from ...services.thumbnail.model import Thumbnail
+    from .thumbnail import Thumbnail
 
 class UserService:
     def __init__(self, client: Client):

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ...types.thumbnail import Thumbnail, ThumbnailMetadata, ThumbnailBatch, ThumbnailBatchTypes
+from .types.thumbnail import Thumbnail, ThumbnailMetadata, ThumbnailBatch, ThumbnailBatchTypes
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ...client import Client
+    from .client import Client
 
 
 class ThumbnailService:
