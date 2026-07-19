@@ -4,9 +4,9 @@ from __future__ import annotations
 from .http.client import HTTPClient
 
 # --------- SERVICES ----------
-from .services.user.service import UserService
-from .services.thumbnail.service import ThumbnailService
-from .services.thumbnailresizer.service import ThumbnailResizerService
+from .user import UserService
+from .thumbnail import ThumbnailService
+from .thumbnailresizer import ThumbnailResizerService
 
 
 class Client:
