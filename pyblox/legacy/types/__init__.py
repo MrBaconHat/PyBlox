@@ -1,4 +1,4 @@
-from ..services.user.model import (
+from .user import (
     User,
     AuthenticatedUser,
     PartialUser,
@@ -7,14 +7,14 @@ from ..services.user.model import (
     UsernameHistoryResult,
 )
 
-from ..services.thumbnail.model import (
+from .thumbnail import (
     Thumbnail,
     ThumbnailMetadata,
     ThumbnailBatch,
     ThumbnailBatchTypes,
 )
 
-from ..services.groups.model import (
+from .group import (
     Group,
     Shout,
     Poster,
