@@ -24,24 +24,16 @@ from .errors import (
     # Base Exceptions
     TooShort,
     TooLong,
+    TooMany,
     Moderated,
     Filtered,
-    InvalidCharacters,
-    InvalidCharactersSet,
+    Invalid,
     NotFound,
     AuthenticationDenied,
     TokenValidationFailed,
     PinLocked,
     UnknownError,
-    FeatureDisabled,
-
-    # Users API Exceptions
-    InvalidBirthdate,
-    InvalidPassword,
-    InvalidGender,
-    MissingBirthdate,
-    TooManyUsernames,
-    TooManyIds
+    FeatureDisabled
 )
 
 __all__ = [
@@ -65,20 +57,14 @@ __all__ = [
     "RBLXException",
     "TooShort",
     "TooLong",
+    "TooMany",
     "Moderated",
     "Filtered",
-    "InvalidCharacters",
-    "InvalidCharactersSet",
+    "Invalid"
     "NotFound",
     "AuthenticationDenied",
     "TokenValidationFailed",
     "PinLocked",
     "UnknownError",
-    "FeatureDisabled",
-    "InvalidBirthdate",
-    "InvalidPassword",
-    "InvalidGender",
-    "MissingBirthdate",
-    "TooManyUsernames",
-    "TooManyIds"
+    "FeatureDisabled"
 ]
