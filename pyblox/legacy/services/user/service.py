@@ -46,7 +46,7 @@ class UserService:
             data["birthDay"]
         )
 
-    async def birthdate_update(
+    async def update_birthdate(
         self,
         birth_month: int,
         birth_day: int,
@@ -82,7 +82,7 @@ class UserService:
         )
         return data.get("gender")
 
-    async def gender_update(self, gender: int) -> bool:
+    async def update_gender(self, gender: int) -> bool:
         """
         [COOKIE]
         Update the user's gender
@@ -163,7 +163,7 @@ class UserService:
         )
         return data.get("description")
 
-    async def description_update(self, description: str) -> str | None:
+    async def update_description(self, description: str | None) -> str | None:
         """
         [COOKIE]
         Updates the description of the authenticated user.
