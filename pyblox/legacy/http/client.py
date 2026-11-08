@@ -24,7 +24,7 @@ class HTTPClient:
         url: str,
         headers: dict | None = None,
         params: dict | None = None,
-        json: dict | None = None
+        json: dict | list | None = None
     ):
         session = await self._get_session()
         async with session.request(
@@ -62,7 +62,7 @@ class HTTPClient:
         # Request Data
         headers: dict | None = None,
         params: dict | None = None,
-        json: dict | None = None,
+        json: dict | list | None = None,
 
         # Authentications
         use_csrf: bool = False,
