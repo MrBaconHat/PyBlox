@@ -4,7 +4,38 @@ import aiohttp
 import asyncio
 from typing import Any
 
-from ..errors import RBLXException, ERROR_RP
+from ..errors import *
+
+
+DEFAULT_ERROR_CODE_EXCEPTIONS = {
+    400: {
+        1: NotFound,
+        2: TooMany
+        3: Invalid,
+        4: Invalid,
+        6: Invalid,
+        8: Incorrect
+    },
+    401: {
+        0: AuthenticationDenied
+    },
+    403: {
+        0: TokenValidationFailed,
+        2: PinLocked,
+        5: Invalid
+    },
+    404: {
+        0: NotFound,
+        3: Invalid
+    }
+    500: {
+        0: UnknownError,
+        5: Invalid
+    },
+    503: {
+        3: FeatureDisabled
+    }
+}
 
 
 class HTTPClient:
@@ -24,7 +55,8 @@ class HTTPClient:
         url: str,
         headers: dict | None = None,
         params: dict | None = None,
-        json: dict | list | None = None
+        json: dict | list | None = None,
+        file: str | None = None
     ):
         session = await self._get_session()
         async with session.request(
@@ -32,7 +64,8 @@ class HTTPClient:
             url=url,
             headers=headers,
             params=params,
-            json=json
+            json=json,
+            file=file
         ) as response:
             status = response.status
             resp_headers = response.headers
@@ -63,6 +96,8 @@ class HTTPClient:
         headers: dict | None = None,
         params: dict | None = None,
         json: dict | list | None = None,
+
+        file: str | None = None,
 
         # Authentications
         use_csrf: bool = False,
@@ -97,10 +132,16 @@ class HTTPClient:
         )
 
         error = body.get("errors", [{}])[0]
+
+        # Due to the fact that the API returns a different error format for some endpoints, we need to handle it.
         subcode = error.get("subcode", "None")
+        if subcode == "None":
+            subcode = error.get("code")
         message = error.get("message")
-        
-        if status == 403 and use_csrf and subcode == 0:
+
+        # We dont rely on use_csrf option here
+        # Because i can see cases of it being False despite the endpoint requiring it
+        if status == 403 and subcode == 0:
             self.__x_csrf_token_cache = resp_headers.get("x-csrf-token")
             return await self.request(
                 method=method,
@@ -117,13 +158,14 @@ class HTTPClient:
             retry_after = int(resp_headers.get("Retry-After", 1))
             await asyncio.sleep(retry_after)
             return await self.request(
-                method,
-                url,
-                headers,
-                params,
-                json,
-                use_cookie,
-                use_csrf,
+                method=method,
+                url=url,
+                headers=headers,
+                params=params,
+                json=json,
+                file=file,
+                use_cookie=use_cookie,
+                use_csrf=use_csrf,
                 retry=False
             )
 
@@ -134,7 +176,8 @@ class HTTPClient:
             # Replace all {.*?} with {}
             endpoint = re.sub(r"\{.*?\}", "{}", dirty_endpoint)
             
-            error = ERROR_RP.get(endpoint, {}).get(status, {}).get(subcode, RBLXException)
+            error = ERROR_MAP.get(endpoint, DEFAULT_ERROR_CODE_EXCEPTIONS).get(status, {}).get(subcode, RBLXException)
+            
             raise error(message, status, subcode, url)
             
         return body

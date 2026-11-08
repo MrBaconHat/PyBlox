@@ -58,9 +58,21 @@ class Invalid(RBLXException):
     """
     pass
 
+class Incorrect(RBLXException):
+    """
+    This exception is raised when the input is incorrect.
+    """
+    pass
+
 class MissingRequirement(RBLXException):
     """
     This exception is raised when a constructor is missing a required input.
+    """
+    pass
+
+class NotAllowed(RBLXException):
+    """
+    This exception is raised when the target tries to make an action its not allowed to.
     """
     pass
 
@@ -94,6 +106,14 @@ class NotFound(RBLXException):
     """
     pass
 
+# ============ 405 ============
+
+class OperationUnavailable(RBLXException):
+    """
+    This exception is raised when the operation is unavailable.
+    """
+    pass
+
 # ============ 500 ============
 
 class UnknownError(RBLXException):
@@ -116,7 +136,10 @@ class FeatureDisabled(RBLXException):
 
 # Exceptions registry pattern for roblox API errors
 
-ERROR_RP = {
+ERROR_MAP = {
+    # ==========================
+    #      USERS.ROBLOX.COM
+    # ==========================
     "/v1/birthdate": {
         400: {
             1: NotFound,
@@ -150,26 +173,6 @@ ERROR_RP = {
         },
         500: {
             0: UnknownError
-        }
-    },
-    "/v1/users/authenticated": {
-        401: {
-            0: AuthenticationDenied
-        }
-    },
-    "/v1/users/authenticated/age-bracket": {
-        401: {
-            0: AuthenticationDenied
-        }
-    },
-    "/v1/users/authenticated/country-code": {
-        401: {
-            0: AuthenticationDenied
-        }
-    },
-    "/v1/users/authenticated/roles": {
-        401: {
-            0: AuthenticationDenied
         }
     },
     "/v1/description": {
@@ -255,6 +258,56 @@ ERROR_RP = {
         400: {
             5: Filtered,
             6: TooShort
+        }
+    },
+    
+    # ==========================
+    #    THMBNAILS.ROBLOX.COM
+    # ==========================
+    "/v1/asset-thumbnail-animated": {
+        400: {
+            4: Invalid
+        }
+    },
+    "/v1/assets": {
+        400: {
+            1: TooMany,
+            2: Invalid,
+            3: Invalid,
+            4: Invalid,
+            8: Invalid,
+            10: NotAllowed
+        },
+        403: {
+            9: NotAllowed
+        }
+    },
+    "/v1/assets-thumbnail-3d": {
+        400: {
+            4: Invalid
+        }
+    },
+    "/v1/bundles/thumbnails": {
+        400: {
+            1: TooMany,
+            2: Invalid,
+            3: Invalid,
+            4: Invalid,
+            10: NotAllowed
+        }
+    },
+    "/v1/users/avatar": {
+        400: {
+            1: TooMany,
+            2: Invalid,
+            3: Invalid,
+            4: Invalid,
+            10: NotAllowed
+        }
+    },
+    "/v1/users/avatar-3d": {
+        400: {
+            4: Invalid
         }
     }
 }
